@@ -1,0 +1,25 @@
+{
+  "version": "1",
+  "reference": "BC-26018-EXEMPLE",
+  "date": "2026-10-15",
+  "officine": {
+    "nom": "Pharmacie de l'Exemple",
+    "numero_compte_client": "123456",
+    "cip_officine": "2000001",
+    "telephone": "02 00 00 00 00",
+    "adresse_livraison": {
+      "ligne1": "1 rue de la Pharmacie",
+      "ligne2": null,
+      "code_postal": "75001",
+      "ville": "Paris",
+      "pays": "FR"
+    }
+  },
+  "lignes": [
+    {"id_ligne": "1", "cip13": "3400000000011", "libelle": "PROBIOTIQUE 7 SOUCHES STICKS 30", "quantite": 6, "colisage": 6},
+    {"id_ligne": "2", "cip13": "3400000000028", "libelle": "PROBIOTIQUE DIGESTION GELULES 20", "quantite": 21, "colisage": null},
+    {"id_ligne": "3", "cip13": "3400000000035", "libelle": "EQUILIBRE FEMININ GELULES 15", "quantite": 4, "colisage": null}
+  ],
+  "franco_ht": null,
+  "message": null
+}

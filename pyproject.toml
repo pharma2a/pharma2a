@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pharma2a"
+version = "0.1.0"
+description = "PharmA2A : le protocole ouvert de la commande directe officine-fournisseur sur A2A 1.0. Dictionnaire, agent fournisseur d'exemple, supplier email bridge et pharmacie de démo."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+# Versions épinglées : celles que les tests et l'agent en service font tourner. Une montée
+# de version est un changement relu, testé, et noté dans CHANGELOG.md.
+dependencies = [
+  "a2a-sdk[http-server,sqlite]==1.3.0",
+  "jsonschema==4.26.0",
+  "uvicorn==0.54.0",
+  "openpyxl==3.1.5",
+]
+
+[project.optional-dependencies]
+modele = ["anthropic==1.15.0"]
+gmail = ["cryptography==50.0.2"]
+test = ["pytest==9.2.0", "httpx==0.28.1"]
+
+[project.scripts]
+pharma2a = "pharma2a.__main__:main"
+
+# Le dictionnaire voyage avec l'agent : schema/ reste à la racine du dépôt,
+# domaine public, et s'installe aussi dans le paquet (pharma2a/schema), pour qu'une
+# installation sans -e (pip install git+...) valide encore
+[tool.setuptools]
+packages = ["pharma2a", "pharma2a.backends", "pharma2a.schema"]
+
+[tool.setuptools.package-dir]
+"pharma2a.schema" = "schema"
+
+[tool.setuptools.package-data]
+"pharma2a.schema" = ["*.json", "exemples/*.json", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["sorties"]
+
+[tool.ruff.lint]
+# Les règles par défaut (pyflakes et les erreurs de pycodestyle). Le style compact de la maison
+# est assumé : plusieurs instructions courtes sur une ligne, « l » pour une ligne de commande.
+ignore = ["E701", "E702", "E731", "E741"]
+
+[tool.ruff.lint.per-file-ignores]
+# les fixtures pytest s'importent d'un module de test à l'autre
+"tests/*" = ["F811"]

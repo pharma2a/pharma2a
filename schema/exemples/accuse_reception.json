@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "reference": "BC-26018-EXEMPLE",
+  "origine": "erp",
+  "numero_commande_labo": "SO-884512",
+  "date_livraison_prevue": "2026-10-20",
+  "lignes": [
+    {"id_ligne": "1", "cip13": "3400000000011", "quantite_confirmee": 6, "prix_tarif_ht": 9.90, "remise_pct": 30, "prix_net_ht": 6.93, "taux_tva": 5.5, "reliquat": 0, "rupture": false, "cip13_substitue": null, "commentaire": null},
+    {"id_ligne": "2", "cip13": "3400000000028", "quantite_confirmee": 12, "prix_tarif_ht": 7.50, "remise_pct": 30, "prix_net_ht": 5.25, "taux_tva": 5.5, "reliquat": 9, "rupture": false, "cip13_substitue": null, "commentaire": "9 en reliquat, départ semaine 44"},
+    {"id_ligne": "3", "cip13": "3400000000035", "quantite_confirmee": 0, "rupture": true, "commentaire": "rupture fabricant, retour prévu en décembre"}
+  ],
+  "commentaire": "Commande enregistrée le 15/10, départ le 17/10."
+}

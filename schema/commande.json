@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pharma2a:commande:1",
+  "title": "Commande",
+  "description": "Un bon de commande d'une officine vers un fournisseur (fabricant, grossiste, plateforme). Il ne porte AUCUN prix : l'officine ne dit rien de ses prix, et la facturation se fait aux conditions en vigueur entre l'officine et le fournisseur, que celui-ci donne dans sa fiche et son accusé de réception. Envoyé par l'agent d'achat de l'officine dans une partie de type données (DataPart) d'un message A2A, compétence « commander ».",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reference",
+    "date",
+    "officine",
+    "lignes"
+  ],
+  "properties": {
+    "version": {
+      "const": "1",
+      "description": "Version du dictionnaire. Toujours « 1 » pour ce schéma."
+    },
+    "reference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^[A-Z0-9][A-Z0-9 ._/-]*$",
+      "description": "L'identifiant unique de la commande chez l'officine (ex. BC-26018-LABO). Unique par officine : deux commandes distinctes n'ont jamais la même référence, et une commande reçue deux fois sous la même référence pour le même compte client est la même commande, l'agent du fournisseur ne la transmet qu'une fois et rend la tâche déjà ouverte. Le fournisseur la rappelle dans l'accusé de réception et sur la facture."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date d'émission de la commande, au format AAAA-MM-JJ."
+    },
+    "nature": {
+      "enum": [
+        "commande",
+        "proposition",
+        null
+      ],
+      "description": "« commande » (défaut si absent) : un bon de commande à exécuter. « proposition » : la commande que l'officine se prépare à passer, envoyée AVANT pour que le fournisseur la confirme et donne ce qui manque (voir « questions »). Une proposition ne s'exécute pas : l'officine envoie ensuite la commande définitive, corrigée d'après la réponse."
+    },
+    "questions": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "franco",
+          "colisage",
+          "delai_livraison",
+          "catalogue"
+        ]
+      },
+      "description": "Ce que l'agent de l'officine ne sait pas encore et demande au fournisseur : son franco de port, le colisage des références commandées, son délai de livraison, son catalogue (tarif en vigueur, en pièce jointe). Le fournisseur répond dans l'accusé de réception (« conditions », « colisage » par ligne) et joint le catalogue s'il le veut."
+    },
+    "officine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nom",
+        "adresse_livraison"
+      ],
+      "description": "L'officine qui commande, telle qu'elle apparaît sur un bon de commande papier.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Enseigne de l'officine (ex. Grande Pharmacie de ...)."
+        },
+        "numero_compte_client": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Numéro de compte client de l'officine chez CE fournisseur. Vide (null) si l'officine ne le connaît pas : le fournisseur retrouve alors le compte par le nom et l'adresse."
+        },
+        "cip_officine": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{7}$",
+          "description": "Identifiant CIP de l'officine (7 chiffres), si connu."
+        },
+        "telephone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Téléphone de l'officine, pour le service commandes du fournisseur."
+        },
+        "adresse_livraison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ligne1",
+            "code_postal",
+            "ville"
+          ],
+          "description": "Adresse où livrer. Une seule adresse par commande.",
+          "properties": {
+            "ligne1": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Numéro et voie."
+            },
+            "ligne2": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Complément (bâtiment, zone), sinon null."
+            },
+            "code_postal": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Code postal."
+            },
+            "ville": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Ville."
+            },
+            "pays": {
+              "type": "string",
+              "default": "FR",
+              "description": "Code pays ISO 3166-1 alpha-2. FR par défaut."
+            }
+          }
+        }
+      }
+    },
+    "lignes": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Les produits commandés. Une ligne par produit, jamais deux lignes pour le même produit. Chaque ligne a son id_ligne, unique dans la commande.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id_ligne",
+          "libelle",
+          "quantite"
+        ],
+        "properties": {
+          "cip13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code CIP 13 du produit, l'identifiant principal en pharmacie. Facultatif : certains produits de parapharmacie n'en ont pas, la ligne porte alors son ean13 ou sa ref_fournisseur."
+          },
+          "ean13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code EAN 13 du produit, quand il n'a pas de CIP 13 (parapharmacie, accessoires) ou en plus du CIP 13."
+          },
+          "ref_fournisseur": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "La référence du produit dans le catalogue du fournisseur, quand il n'a ni CIP 13 ni EAN 13, ou en plus."
+          },
+          "id_ligne": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "L'identifiant de la ligne dans cette commande, choisi par l'officine, unique dans la commande (« 1 », « 2 »… ou le code du produit). L'accusé de réception répond ligne par ligne avec cet identifiant, ce qui lève toute ambiguïté quand un produit change de code ou n'en a pas."
+          },
+          "libelle": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Désignation du produit telle que l'officine la connaît. Indicative : le fournisseur fait foi sur le code."
+          },
+          "quantite": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Nombre d'unités de vente commandées (boîtes, flacons...), jamais de colis. Entier strictement positif."
+          },
+          "colisage": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "description": "Unités par colis, tel que le fournisseur l'a dit à l'officine (son tarif, sa réponse à une proposition). La quantité en est alors un multiple : le fournisseur le voit sans avoir à le rappeler. null : l'officine ne le sait pas, et le demande (voir « questions »)."
+          },
+          "reliquat_accepte": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Pour cette ligne seulement, prime sur le reliquat_accepte de la commande. true : le reste peut suivre en reliquat. false : ce qui ne part pas est annulé. null ou absent : la règle de la commande."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "cip13"
+            ],
+            "properties": {
+              "cip13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ean13"
+            ],
+            "properties": {
+              "ean13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ref_fournisseur"
+            ],
+            "properties": {
+              "ref_fournisseur": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": ""
+      }
+    },
+    "franco_ht": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "description": "Le franco de port du fournisseur, tel qu'il l'a donné à l'officine, rappelé parce que l'agent de l'officine a vérifié que la commande l'atteint. Le fournisseur le voit sans avoir à demander d'ajouter des lignes, ou le corrige. Ce n'est pas un montant de la commande : aucun montant de l'officine ne circule. null : franco inconnu (l'agent le demande), ou non vérifié."
+    },
+    "date_livraison_exigee": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "true : l'officine attend une date de livraison ferme dans l'accusé de réception. Sans elle, la commande n'est pas confirmée : le pharmacien tranche. false, null ou absent : un numéro de commande suffit à la confirmer."
+    },
+    "reliquat_accepte": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Pour toute la commande. true : ce que le fournisseur ne livre pas tout de suite peut suivre en reliquat, sans nouvelle commande. false : ce qui ne part pas est annulé, l'officine recommandera. null ou absent : l'officine ne l'a pas dit. Une ligne peut dire autre chose (son propre reliquat_accepte)."
+    },
+    "page_reponse": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "pattern": "^https://",
+      "maxLength": 300,
+      "description": "Optionnel : l'adresse d'une page où le fournisseur peut répondre sans écrire (corriger les lignes, donner le franco et le délai, déposer son tarif). Le lien est propre à cette commande et expire. Le mail reste la voie normale : répondre au message suffit toujours."
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000,
+      "description": "Un mot libre du pharmacien pour le fournisseur (ex. « livraison avant vendredi si possible »). Jamais un prix, jamais une condition commerciale."
+    },
+    "etat_de_rayon": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Optionnel : l'état de rayon du fournisseur, joint à la commande pour qu'il parte dans le même envoi (un seul mail). Même contenu et mêmes règles que le message etat_de_rayon : validé contre etat_de_rayon.json. Absent ou null : la commande seule."
+    },
+    "agent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Optionnel : l'agent d'achat de l'officine qui prépare le message, pour qu'il se présente au fournisseur. Le fournisseur sait ainsi qui écrit et qui a validé.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Le nom de l'agent d'achat de l'officine, tel qu'il se présente au fournisseur."
+        },
+        "signataire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "La personne qui a validé l'envoi (ex. le titulaire), telle qu'elle doit apparaître."
+        }
+      }
+    }
+  }
+}

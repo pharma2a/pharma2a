@@ -1,0 +1,425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pharma2a:fiche_fournisseur:1",
+  "title": "Fiche du fournisseur",
+  "description": "Le guichet du fournisseur : qui il est, comment on le joint, à quelles conditions il livre, sa gamme par CIP 13, et, s'il le veut, son tarif catalogue. Publiée par l'agent du fournisseur. Le tarif est le sien, le même pour toutes les officines (prix HT avant remise) : jamais une remise ni un prix propre à une officine, qui voyagent dans l'accusé de réception, sous clé. Sans clé, la fiche se lit comme une vitrine, sans le tarif sauf si le fournisseur le rend public. Ce que le fournisseur n'a pas dit reste null.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "fournisseur",
+    "date"
+  ],
+  "properties": {
+    "version": {
+      "const": "1",
+      "description": "Version du dictionnaire. Toujours « 1 » pour ce schéma."
+    },
+    "fournisseur": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nom"
+      ],
+      "description": "L'identité du fournisseur, telle qu'il la donne.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Le nom commercial du fournisseur."
+        },
+        "raison_sociale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "La raison sociale, si elle diffère du nom."
+        },
+        "siren": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{9}$",
+          "description": "Le numéro SIREN. Null s'il n'est pas donné."
+        },
+        "site": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "description": "L'adresse du site du fournisseur."
+        },
+        "marques": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Les marques que cet agent sert, quand un groupe en a plusieurs."
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "La date de la fiche (AAAA-MM-JJ). Une fiche plus récente remplace la précédente."
+    },
+    "contacts": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Comment joindre le fournisseur. Null s'il n'a rien publié.",
+      "properties": {
+        "commandes": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "description": "Le service commandes (ADV).",
+          "properties": {
+            "email": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "email"
+            },
+            "telephone": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "horaires": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200,
+              "description": "Les horaires d'ouverture, en clair."
+            }
+          }
+        },
+        "delegues": {
+          "type": "array",
+          "description": "Les délégués, par secteur. Une officine retrouve le sien par son département.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "secteur"
+            ],
+            "properties": {
+              "secteur": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[1-8][0-9]|9[0-5]|2A|2B|97[1-6])$"
+                },
+                "description": "Les départements couverts, en codes (« 44 », « 2A », « 972 »)."
+              },
+              "nom": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email"
+              },
+              "telephone": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "conditions": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Les conditions générales de livraison du fournisseur, celles qu'il publie à toutes les officines. Jamais les conditions particulières d'une officine : celles-là voyagent dans la réponse à une proposition, sous clé.",
+      "properties": {
+        "franco_ht": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Le montant HT à partir duquel le fournisseur livre sans frais de port. Null s'il ne l'a pas dit."
+        },
+        "assiette_franco": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "net_remise",
+            "brut_tarif",
+            null
+          ],
+          "description": "Sur quoi le franco se compte : le net après remise (le plus courant) ou le brut au tarif. Null si le fournisseur ne l'a pas précisé ; l'agent de l'officine n'en déduit rien."
+        },
+        "delai_livraison_jours": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Le délai de livraison annoncé, en jours ouvrés."
+        },
+        "jours_expedition": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "lundi",
+              "mardi",
+              "mercredi",
+              "jeudi",
+              "vendredi",
+              "samedi"
+            ]
+          },
+          "description": "Les jours où le fournisseur expédie, s'il en a de fixes."
+        },
+        "commande_directe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Vrai si le fournisseur accepte la commande directe de l'officine. Faux s'il ne livre que par les grossistes."
+        },
+        "par_grossiste": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Vrai si la gamme est aussi disponible chez les grossistes-répartiteurs."
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000,
+          "description": "Ce que le fournisseur ajoute sur ses conditions, en clair, recopié."
+        }
+      }
+    },
+    "tarif": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "date"
+      ],
+      "description": "Le tarif catalogue que portent les lignes de la gamme (prix_tarif_ht) : sa date d'effet. Null si la fiche ne porte pas de tarif.",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "La date d'effet du tarif (AAAA-MM-JJ)."
+        },
+        "devise": {
+          "type": "string",
+          "enum": [
+            "EUR"
+          ],
+          "description": "La devise des prix. EUR."
+        }
+      }
+    },
+    "gamme": {
+      "type": "array",
+      "description": "La gamme, une ligne par référence vendue en direct : l'existence, le colisage, le statut, et le prix catalogue si le fournisseur publie son tarif.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {
+          "cip13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code CIP 13 de la référence, l'identifiant principal en pharmacie. Facultatif : un produit sans CIP 13 porte son ean13 ou sa ref_fournisseur."
+          },
+          "ean13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code EAN 13 de la référence, quand elle n'a pas de CIP 13 ou en plus."
+          },
+          "ref_fournisseur": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "La référence du produit dans le catalogue du fournisseur, quand il n'a ni CIP 13 ni EAN 13, ou en plus."
+          },
+          "libelle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200,
+            "description": "Le libellé du fournisseur."
+          },
+          "colisage": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "description": "Le colisage en unités : la commande se passe par multiples de ce nombre. Null si à l'unité ou non dit."
+          },
+          "prix_tarif_ht": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Le prix catalogue HT de l'unité, avant toute remise, au tarif daté dans « tarif ». Le même pour toutes les officines. Null si le fournisseur ne le publie pas."
+          },
+          "taux_tva": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Le taux de TVA de la référence, en pour cent (20, 10, 5,5, 2,1, ou le taux applicable outre-mer), tel que le fournisseur le facture. Ce n'est pas un prix : la vitrine le montre même sans le tarif. Null si non dit."
+          },
+          "statut": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "actif",
+              "nouveau",
+              "arrete",
+              "sur_commande",
+              null
+            ],
+            "description": "actif : au catalogue. nouveau : lancé depuis moins de six mois. arrete : ne se fait plus, le fournisseur ne le livrera plus. sur_commande : fabriqué ou approvisionné à la demande, délai à part. Null si non dit."
+          },
+          "date_arret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "Pour une référence arrêtée : depuis quand, ou à partir de quand."
+          },
+          "cip13_remplace_par": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{13}$",
+            "description": "Pour une référence arrêtée : la référence qui la remplace, si le fournisseur en désigne une."
+          },
+          "delai_jours": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Pour une référence sur commande : son délai propre, en jours ouvrés."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "cip13"
+            ],
+            "properties": {
+              "cip13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ean13"
+            ],
+            "properties": {
+              "ean13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ref_fournisseur"
+            ],
+            "properties": {
+              "ref_fournisseur": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "documents": {
+      "type": "array",
+      "description": "Les documents du fournisseur que l'officine peut aller lire : le tarif (sa version complète), le catalogue, les conditions générales de vente.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nature",
+          "url"
+        ],
+        "properties": {
+          "nature": {
+            "type": "string",
+            "enum": [
+              "tarif",
+              "catalogue",
+              "conditions_generales",
+              "fiche_parametrage",
+              "autre"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "La date d'édition du document."
+          },
+          "libelle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          }
+        }
+      }
+    }
+  }
+}

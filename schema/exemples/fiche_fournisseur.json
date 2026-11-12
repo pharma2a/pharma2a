@@ -1,0 +1,39 @@
+{
+  "version": "1",
+  "fournisseur": {
+    "nom": "LABORATOIRE EXEMPLE",
+    "raison_sociale": "Laboratoire Exemple SAS",
+    "siren": "000000000",
+    "site": "https://www.laboratoire-exemple.example",
+    "marques": ["EXEMPLE", "EXEMPLE BABY"]
+  },
+  "date": "2026-10-30",
+  "contacts": {
+    "commandes": { "email": "commandes@laboratoire-exemple.example", "telephone": "01 00 00 00 00", "horaires": "du lundi au vendredi, 9 h à 17 h" },
+    "delegues": [
+      { "secteur": ["75", "92", "94"], "nom": null, "email": "secteur-ouest@laboratoire-exemple.example", "telephone": "06 00 00 00 00" },
+      { "secteur": ["971", "972", "973"], "nom": null, "email": "secteur-antilles@laboratoire-exemple.example", "telephone": null }
+    ]
+  },
+  "conditions": {
+    "franco_ht": 400,
+    "assiette_franco": "net_remise",
+    "delai_livraison_jours": 3,
+    "jours_expedition": ["mardi", "jeudi"],
+    "commande_directe": true,
+    "par_grossiste": true,
+    "commentaire": "Expédition en Outre-mer le jeudi seulement."
+  },
+  "tarif": { "date": "2026-01-01", "devise": "EUR" },
+  "gamme": [
+    { "cip13": "3400000000011", "libelle": "PROBIOTIQUE 7 SOUCHES STICKS 30", "colisage": 6, "prix_tarif_ht": 9.90, "taux_tva": 5.5, "statut": "actif", "date_arret": null, "cip13_remplace_par": null, "delai_jours": null },
+    { "cip13": "3400000000028", "libelle": "PROBIOTIQUE DIGESTION GELULES 20", "colisage": null, "prix_tarif_ht": 7.50, "taux_tva": 5.5, "statut": "actif" },
+    { "cip13": "3400000000035", "libelle": "EQUILIBRE FEMININ GELULES 15", "colisage": null, "prix_tarif_ht": 8.20, "taux_tva": 5.5, "statut": "arrete", "date_arret": "2026-10-01", "cip13_remplace_par": "3400000000042" },
+    { "cip13": "3400000000042", "libelle": "EQUILIBRE FEMININ GELULES 30", "colisage": 3, "prix_tarif_ht": 14.90, "taux_tva": 5.5, "statut": "nouveau" },
+    { "cip13": "3400000000059", "libelle": "CHEVEUX ET ONGLES GELULES 60", "colisage": null, "prix_tarif_ht": 11.00, "taux_tva": 5.5, "statut": "sur_commande", "delai_jours": 15 }
+  ],
+  "documents": [
+    { "nature": "tarif", "url": "https://www.laboratoire-exemple.example/pro/tarif-2026.pdf", "date": "2026-01-01", "libelle": "Tarif officine 2026" },
+    { "nature": "conditions_generales", "url": "https://www.laboratoire-exemple.example/pro/cgv.pdf", "date": "2026-01-01", "libelle": null }
+  ]
+}

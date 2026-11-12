@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pharma2a:relance:1",
+  "title": "Relance",
+  "description": "L'officine relance son fournisseur sur une commande déjà envoyée : la livraison annoncée n'est pas arrivée, ou la commande est restée sans réponse. Une relance ne crée jamais de commande et ne change ni les produits ni les quantités : elle demande où en est la commande. Elle ne porte AUCUN prix. Envoyée par l'agent d'achat de l'officine dans une partie de type données d'un message A2A, compétence « relancer ». Elle vise une commande que le même agent du fournisseur a reçue sous cette référence, pour la même officine.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reference",
+    "date",
+    "officine",
+    "motif"
+  ],
+  "properties": {
+    "version": {
+      "const": "1",
+      "description": "Version du dictionnaire."
+    },
+    "reference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "La référence de la commande relancée, telle qu'elle a été envoyée."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Le jour de la relance."
+    },
+    "officine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nom",
+        "adresse_livraison"
+      ],
+      "description": "L'officine qui commande, telle qu'elle apparaît sur un bon de commande papier.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Enseigne de l'officine (ex. Grande Pharmacie de ...)."
+        },
+        "numero_compte_client": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Numéro de compte client de l'officine chez CE fournisseur. Vide (null) si l'officine ne le connaît pas : le fournisseur retrouve alors le compte par le nom et l'adresse."
+        },
+        "cip_officine": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{7}$",
+          "description": "Identifiant CIP de l'officine (7 chiffres), si connu."
+        },
+        "telephone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Téléphone de l'officine, pour le service commandes du fournisseur."
+        },
+        "adresse_livraison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ligne1",
+            "code_postal",
+            "ville"
+          ],
+          "description": "Adresse où livrer. Une seule adresse par commande.",
+          "properties": {
+            "ligne1": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Numéro et voie."
+            },
+            "ligne2": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Complément (bâtiment, zone), sinon null."
+            },
+            "code_postal": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Code postal."
+            },
+            "ville": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Ville."
+            },
+            "pays": {
+              "type": "string",
+              "default": "FR",
+              "description": "Code pays ISO 3166-1 alpha-2. FR par défaut."
+            }
+          }
+        }
+      }
+    },
+    "motif": {
+      "enum": [
+        "livraison_en_retard",
+        "sans_reponse"
+      ],
+      "description": "livraison_en_retard : la date de livraison annoncée par le fournisseur est passée et la commande n'est pas arrivée. sans_reponse : la commande est restée sans réponse du fournisseur."
+    },
+    "date_livraison_annoncee": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "description": "Pour une livraison en retard : la date que le fournisseur avait annoncée. null : il n'en avait pas donné."
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000,
+      "description": "Un mot libre du pharmacien. Jamais un prix, jamais une condition commerciale."
+    },
+    "agent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Optionnel : l'agent d'achat de l'officine qui prépare le message, pour qu'il se présente au fournisseur. Le fournisseur sait ainsi qui écrit et qui a validé.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Le nom de l'agent d'achat de l'officine, tel qu'il se présente au fournisseur."
+        },
+        "signataire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "La personne qui a validé l'envoi (ex. le titulaire), telle qu'elle doit apparaître."
+        }
+      }
+    }
+  }
+}

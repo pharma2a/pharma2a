@@ -1,0 +1,22 @@
+{
+  "version": "1",
+  "reference": "BC-26018-EXEMPLE",
+  "date": "2026-11-02",
+  "officine": {
+    "nom": "Pharmacie de l'Exemple",
+    "numero_compte_client": "123456",
+    "cip_officine": "2000001",
+    "telephone": "02 00 00 00 00",
+    "adresse_livraison": {
+      "ligne1": "1 rue de la Pharmacie",
+      "ligne2": null,
+      "code_postal": "75001",
+      "ville": "Paris",
+      "pays": "FR"
+    }
+  },
+  "motif": "livraison_en_retard",
+  "date_livraison_annoncee": "2026-10-30",
+  "message": null,
+  "agent": null
+}

@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "officine": { "nom": "Pharmacie de l'Exemple", "numero_compte_client": "123456", "cip_officine": "2000001" },
+  "fournisseur": "LABO UN",
+  "date": "2026-10-15",
+  "periode": { "du": "2026-07-01", "au": "2026-09-30" },
+  "lignes": [
+    { "cip13": "3400000000011", "libelle": "PROBIOTIQUE 7 SOUCHES STICKS 30", "stock": 0, "ventes_3_mois": 2, "couverture_jours": 0, "mois_a_zero_3_mois": 1 },
+    { "cip13": "3400000000028", "libelle": "PROBIOTIQUE DIGESTION GELULES 20", "stock": 3, "ventes_3_mois": 12, "couverture_jours": 23, "mois_a_zero_3_mois": 0 },
+    { "cip13": "3400000000066", "libelle": "PROBIOTIQUE ENFANT GELULES 10", "stock": 31, "ventes_3_mois": 30, "couverture_jours": 93, "mois_a_zero_3_mois": 0 },
+    { "cip13": "3400000000059", "libelle": "CHEVEUX ET ONGLES GELULES 60", "stock": 0, "ventes_3_mois": 0, "couverture_jours": null, "mois_a_zero_3_mois": 3 }
+  ]
+}

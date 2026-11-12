@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pharma2a:accuse_reception:1",
+  "title": "Accusé de réception",
+  "description": "La réponse du fournisseur à une commande. Renvoyée par l'agent PharmA2A dans un artefact de type données (DataPart) attaché à la tâche A2A. Règle absolue : un champ que le fournisseur n'a pas dit reste null, il n'est jamais deviné ni calculé. Le fournisseur peut y donner ses propres conditions : par ligne, son prix catalogue, la remise qu'il accorde à cette officine et le prix net qu'il facturera ; et ses conditions générales (franco, délai). Jamais un prix de l'officine.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reference",
+    "origine",
+    "lignes"
+  ],
+  "properties": {
+    "version": {
+      "const": "1",
+      "description": "Version du dictionnaire. Toujours « 1 » pour ce schéma."
+    },
+    "reference": {
+      "type": "string",
+      "minLength": 1,
+      "description": "La référence de la commande à laquelle on répond, recopiée telle quelle."
+    },
+    "origine": {
+      "enum": [
+        "erp",
+        "transcription"
+      ],
+      "description": "D'où vient cet accusé. « erp » : il est produit par un système du fournisseur (son ERP, son portail de commandes), la réponse est celle de ses propres données. « transcription » : un agent a lu une réponse humaine (un mail, un PDF, une page remplie à la main) et l'a transcrite dans le dictionnaire ; la lecture peut se tromper, et ce qui n'était pas écrit reste null. Recommandation aux implémenteurs côté officine : un accusé en « transcription » ne vaut jamais une confirmation automatique, il remonte au pharmacien, qui tranche."
+    },
+    "numero_commande_labo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Le numéro que le fournisseur a donné à cette commande dans son propre système. Null s'il ne l'a pas communiqué."
+    },
+    "date_livraison_prevue": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "description": "Date de livraison annoncée par le fournisseur (AAAA-MM-JJ). Null si non annoncée."
+    },
+    "remise_pct": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "La remise que le fournisseur accorde à cette officine sur toute la commande, en pourcentage, telle qu'il l'écrit : la remise portée sur la facture (remise immédiate), jamais une remise de fin d'année ni un accord arrière, qui n'apparaissent pas sur la facture. La remise d'une ligne l'emporte. Null s'il ne la dit pas."
+    },
+    "lignes": {
+      "type": "array",
+      "description": "Une ligne par ligne de la commande, retrouvée par son id_ligne. Une ligne absente de cette liste n'a pas été commentée par le fournisseur : elle est réputée confirmée telle que commandée si le fournisseur a enregistré la commande (numero_commande_labo ou date_livraison_prevue) ou l'a confirmée globalement (confirmation_globale à true), sinon inconnue. Un commentaire seul ne confirme rien.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id_ligne"
+        ],
+        "properties": {
+          "cip13": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{13}$",
+            "description": "Le CIP 13 de la ligne commandée, recopié de la commande. Null si la ligne n'en a pas."
+          },
+          "ean13": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{13}$",
+            "description": "L'EAN 13 de la ligne commandée, recopié de la commande, si elle en porte un."
+          },
+          "ref_fournisseur": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "La référence fournisseur de la ligne commandée, recopiée de la commande, si elle en porte une."
+          },
+          "id_ligne": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "L'id_ligne de la ligne de la commande à laquelle on répond, recopié. C'est la clé de la réponse ; le code du produit est rappelé à côté."
+          },
+          "quantite_confirmee": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Quantité que le fournisseur va livrer. 0 si rien ne part. Null si le fournisseur ne l'a pas précisé."
+          },
+          "colisage": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "description": "Le colisage de la référence chez le fournisseur, en unités : la commande se passe par multiples de ce nombre. Null s'il ne l'a pas dit."
+          },
+          "prix_tarif_ht": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Le prix catalogue HT de l'unité, tel que le fournisseur l'écrit. Null s'il ne le dit pas."
+          },
+          "remise_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "La remise que le fournisseur accorde à cette officine sur cette ligne, en pourcentage, telle qu'il l'écrit : la remise portée sur la facture (remise immédiate), jamais une remise de fin d'année ni un accord arrière, qui n'apparaissent pas sur la facture. Elle l'emporte sur la remise de la commande. Null s'il ne la dit pas."
+          },
+          "prix_net_ht": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Le prix net HT de l'unité que le fournisseur facturera, tel qu'il l'écrit. Null s'il ne le dit pas : il n'est jamais calculé à partir du tarif et de la remise."
+          },
+          "taux_tva": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Le taux de TVA que le fournisseur appliquera sur cette ligne, en pour cent, tel qu'il l'écrit. Null s'il ne le dit pas."
+          },
+          "reliquat": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Quantité livrée plus tard, dans un second envoi. Null si non précisé, 0 si pas de reliquat."
+          },
+          "rupture": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True si le fournisseur déclare la référence en rupture chez LUI (il ne peut pas livrer). C'est le seul sens du mot rupture dans ce dictionnaire. Null si non dit."
+          },
+          "cip13_substitue": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{13}$",
+            "description": "Si le fournisseur propose un autre produit à la place, son cip13. Une substitution n'est jamais acceptée automatiquement : elle remonte au pharmacien."
+          },
+          "commentaire": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000,
+            "description": "Ce que le fournisseur a dit sur cette ligne, recopié, jamais interprété."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "cip13"
+            ],
+            "properties": {
+              "cip13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ean13"
+            ],
+            "properties": {
+              "ean13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ref_fournisseur"
+            ],
+            "properties": {
+              "ref_fournisseur": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": ""
+      }
+    },
+    "confirmation_globale": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Le fournisseur accepte la commande telle quelle, globalement et sans réserve : true seulement s'il le dit (« commande confirmée », « OK pour tout », « enregistrée telle quelle »). false seulement s'il dit qu'il ne la prend pas. null s'il ne dit ni l'un ni l'autre. Facultatif ; un numéro de commande ou une date de livraison valent aussi enregistrement de la commande."
+    },
+    "conditions": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Les conditions générales que le fournisseur donne lui-même en réponse aux questions de l'officine (franco, délai, catalogue joint). Les prix d'une ligne sont dans la ligne. Null s'il n'en a donné aucune.",
+      "properties": {
+        "franco_ht": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Le montant HT à partir duquel le fournisseur livre sans frais de port. Null s'il ne l'a pas dit."
+        },
+        "delai_livraison_jours": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Le délai de livraison annoncé, en jours. Null s'il ne l'a pas dit."
+        },
+        "catalogue_joint": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Vrai si le fournisseur a joint son catalogue ou son tarif à la réponse."
+        }
+      }
+    },
+    "commentaire": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000,
+      "description": "Ce que le fournisseur a dit sur la commande entière (ex. « commande enregistrée, départ lundi »), recopié."
+    }
+  }
+}

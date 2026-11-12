@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pharma2a:etat_de_rayon:1",
+  "title": "État de rayon",
+  "description": "Ce que l'officine accepte de partager avec UN fournisseur sur SES références, et rien d'autre : stock du jour, ventes des trois derniers mois, couverture, mois à zéro. Aucun prix, aucune marge, aucun chiffre d'affaires, aucune référence d'un autre fournisseur, aucune donnée patient. Envoyé seulement si le pharmacien a allumé « Partager mon état de rayon » pour ce fournisseur ; il peut l'éteindre à tout moment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "officine",
+    "fournisseur",
+    "date",
+    "periode",
+    "lignes"
+  ],
+  "properties": {
+    "version": {
+      "const": "1",
+      "description": "Version du dictionnaire. Toujours « 1 » pour ce schéma."
+    },
+    "officine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nom"
+      ],
+      "description": "L'officine qui partage.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Enseigne de l'officine."
+        },
+        "numero_compte_client": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Numéro de compte client chez ce fournisseur, si connu."
+        },
+        "cip_officine": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{7}$",
+          "description": "Identifiant CIP de l'officine (7 chiffres), si connu."
+        }
+      }
+    },
+    "fournisseur": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Le fournisseur destinataire (fabricant, grossiste, plateforme), tel que l'officine le nomme. Toutes les lignes sont des références de ce fournisseur."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date du relevé (AAAA-MM-JJ). Le stock est celui du matin de cette date."
+    },
+    "periode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "du",
+        "au"
+      ],
+      "description": "Les trois mois pleins sur lesquels les ventes et les mois à zéro sont comptés.",
+      "properties": {
+        "du": {
+          "type": "string",
+          "format": "date",
+          "description": "Premier jour de la période."
+        },
+        "au": {
+          "type": "string",
+          "format": "date",
+          "description": "Dernier jour de la période."
+        }
+      }
+    },
+    "accord": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "usage"
+      ],
+      "description": "Ce que le pharmacien autorise le fournisseur à faire de cet état de rayon. Absent ou null : rien n'est dit, le fournisseur s'en tient à mieux livrer cette officine.",
+      "properties": {
+        "usage": {
+          "enum": [
+            "livraison",
+            "previsions"
+          ],
+          "description": "livraison : uniquement pour mieux livrer cette officine. previsions : aussi pour les prévisions globales du fournisseur, sans jamais en céder les données."
+        },
+        "valable_jusqu_au": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date",
+          "description": "Le dernier jour de l'accord. null : jusqu'à ce que le pharmacien le retire."
+        },
+        "frequence": {
+          "enum": [
+            "commande",
+            "quotidienne",
+            "hebdomadaire",
+            "mensuelle",
+            null
+          ],
+          "description": "À quel rythme l'officine envoie son état de rayon : avec chaque commande, chaque jour, chaque semaine, chaque mois. null : non précisé."
+        }
+      }
+    },
+    "lignes": {
+      "type": "array",
+      "description": "Une ligne par référence du fournisseur présente chez l'officine (en stock ou vendue sur la période).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "libelle",
+          "stock",
+          "ventes_3_mois"
+        ],
+        "properties": {
+          "cip13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code CIP 13 du produit, l'identifiant principal en pharmacie. Facultatif : certains produits de parapharmacie n'en ont pas, la ligne porte alors son ean13 ou sa ref_fournisseur."
+          },
+          "ean13": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "description": "Code EAN 13 du produit, quand il n'a pas de CIP 13 (parapharmacie, accessoires) ou en plus du CIP 13."
+          },
+          "ref_fournisseur": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "La référence du produit dans le catalogue du fournisseur, quand il n'a ni CIP 13 ni EAN 13, ou en plus."
+          },
+          "libelle": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Désignation telle que l'officine la connaît."
+          },
+          "stock": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Unités en rayon et en réserve le matin du relevé."
+          },
+          "ventes_3_mois": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Unités vendues sur la période."
+          },
+          "couverture_jours": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Nombre de jours que le stock couvre au rythme des ventes de la période (stock divisé par les ventes par jour). Null si aucune vente sur la période : une couverture infinie ne se chiffre pas."
+          },
+          "mois_a_zero_3_mois": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Nombre de mois de la période où la référence a fini le mois à zéro en stock (0 à 3). L'officine ne tient pas d'historique au jour : c'est un compte de mois, pas de jours. Null si l'officine ne sait pas."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "cip13"
+            ],
+            "properties": {
+              "cip13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ean13"
+            ],
+            "properties": {
+              "ean13": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "required": [
+              "ref_fournisseur"
+            ],
+            "properties": {
+              "ref_fournisseur": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": ""
+      }
+    },
+    "agent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Optionnel : l'agent d'achat de l'officine qui prépare le message, pour qu'il se présente au fournisseur. Le fournisseur sait ainsi qui écrit et qui a validé.",
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Le nom de l'agent d'achat de l'officine, tel qu'il se présente au fournisseur."
+        },
+        "signataire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "La personne qui a validé l'envoi (ex. le titulaire), telle qu'elle doit apparaître."
+        }
+      }
+    }
+  }
+}
