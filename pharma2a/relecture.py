@@ -258,6 +258,18 @@ def ecart(avant: dict | None, apres: dict, commande: dict | None) -> tuple[list[
             change.append(f"rupture sur {nom}")
         if (l.get("reliquat") or 0) > 0 and l.get("reliquat") != b.get("reliquat") and reliquat_accepte(commande, i) is not True:
             change.append(f"reliquat de {l['reliquat']} sur {nom}")
+        # Un reliquat accepté peut être réparti autrement, mais il ne dispense pas
+        # de vérifier la quantité totale que le fournisseur annonce pour la ligne.
+        reliquat = l.get("reliquat")
+        if (reliquat is not None and b.get("reliquat") is not None
+                and reliquat != b["reliquat"] and reliquat_accepte(commande, i) is True):
+            maintenant = l.get("quantite_confirmee")
+            if maintenant is None:
+                maintenant = b.get("quantite_confirmee")
+            if maintenant is not None and i in commandees and maintenant + reliquat != commandees[i]:
+                change.append(f"{nom} : {int(maintenant)} confirmé(s), {int(reliquat)} en reliquat pour {int(commandees[i])} commandé(s)")
+            else:
+                complete.append(f"{nom} : {int(reliquat)} en reliquat")
         if l.get("cip13_substitue") and l.get("cip13_substitue") != b.get("cip13_substitue"):
             change.append(f"substitution proposée pour {nom}")
         q = l.get("quantite_confirmee")
