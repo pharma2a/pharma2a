@@ -4,6 +4,13 @@ Each version of PharmA2A is listed here, the most recent first. The dictionary h
 version number, carried in every message and in the extension URI; see section 12 of
 [`SPECIFICATION.md`](SPECIFICATION.md) for how it changes.
 
+## Unreleased
+
+- The conformance trial, `python -m pharma2a.essai`: plays the pharmacy against any supplier
+  agent and gives one verdict per rule of the specification.
+- The demo supplier, `PHARMA2A_BACKEND=demo`: a fictitious supplier that answers by itself. A
+  public instance runs at `https://demo.pharma2a.org`.
+
 ## 0.1 (12 November 2026)
 
 First public version. Dictionary version 1, extension URI `https://pharma2a.org/ext/v1`.

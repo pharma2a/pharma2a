@@ -125,7 +125,7 @@ supplier's own prices, if it gives them, go back in the acknowledgement.
 | `date_livraison_prevue` | the planned delivery date |
 | `lignes[].quantite_confirmee` | what ships now; `0` if nothing ships |
 | `lignes[].reliquat` | what ships later (back order); `0` if nothing |
-| `lignes[].rupture` | `true` when you cannot deliver the product at all |
+| `lignes[].rupture` | `true` when a product you sell is out of stock at your end. A product you do not sell is not out of stock: `quantite_confirmee` `0`, `rupture` `false`, and the reason in `commentaire` |
 | `lignes[].cip13_substitue` | a product you propose instead; the pharmacist decides |
 | `lignes[].prix_tarif_ht`, `remise_pct`, `prix_net_ht`, `taux_tva` | your list price, the discount on the invoice, the net unit price and the VAT rate, as you will invoice them; never computed by the agent |
 | `confirmation_globale` | `true` when the whole order is accepted as is |

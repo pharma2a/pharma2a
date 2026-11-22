@@ -54,6 +54,8 @@ An order is transmitted once: the reference is its identity, per customer accoun
 | **Sample supplier** | The smallest supplier agent that speaks PharmA2A, about a hundred lines: an order in, an acknowledgement out. A template for a lab or a software vendor. | [`examples/sample-supplier/`](examples/sample-supplier/) |
 | **Supplier email bridge** | A complete supplier-side agent for suppliers who only have a mailbox today: it sends the order by mail, reads the answer, and returns it as an acknowledgement. It can also exchange files with an ERP. Replies are transcribed by a language model, optional: the model's provider receives the text of the reply and, to match it, the order's reference and lines (product codes, labels, quantities); the agent never adds the pharmacy's identity or a price. | the `pharma2a` package, `python -m pharma2a` |
 | **Demo pharmacy** | A command line that sends an order to any supplier agent and shows the acknowledgement. | `python -m pharma2a.officine` |
+| **Conformance trial** | A command line that plays the pharmacy against any supplier agent and gives one verdict per rule of the specification. | `python -m pharma2a.essai` |
+| **Demo supplier** | A fictitious supplier that answers by itself, to send trial orders to: `https://demo.pharma2a.org`, token `demo-pharma2a`, account `123456`. | `PHARMA2A_BACKEND=demo` |
 
 The `pharma2a` package also carries what every part uses: the dictionary and its validation (`pharma2a.dictionnaire`).
 

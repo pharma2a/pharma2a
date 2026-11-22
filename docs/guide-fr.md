@@ -584,7 +584,9 @@ résumé :
 - **Les références** : `reference` et `id_ligne` se gardent sur la commande client et
   reviennent sur l'accusé et sur la facture.
 - **Les quantités** : en unités de vente, jamais en colis. Dans l'accusé,
-  `quantite_confirmee` part maintenant, `reliquat` part plus tard, `rupture` ne part pas.
+  `quantite_confirmee` part maintenant, `reliquat` part plus tard, `rupture` ne part pas. Une
+  référence que le fournisseur ne vend pas n'est pas une `rupture` : `quantite_confirmee` vaut 0 et
+  `commentaire` dit pourquoi.
 - **Les prix du fournisseur** : son tarif, la remise portée sur la facture, le prix net et la
   TVA, tels qu'il les facturera ; l'agent ne les calcule jamais.
 
@@ -703,6 +705,41 @@ agent ajouté est servi sans redémarrage.
   liaison HTTP+JSON (section 11.1), ses exemples et son type de média enregistré disent
   `application/a2a+json`. L'agent répond `application/a2a+json` au client qui l'annonce dans
   `Accept`, `application/json` aux autres.
+
+### Vérifier un agent de fournisseur : l'essai de conformité
+
+`python -m pharma2a.essai` joue l'officine face à n'importe quel agent de fournisseur, le
+vôtre ou celui d'un autre, et rend un verdict par règle, avec l'article de la spécification :
+`conforme`, `écart` (un MUST n'est pas tenu, ou le serveur plante), `à voir` (une
+recommandation, ou ce qui ne se vérifie pas de l'extérieur) et `non vérifié`. Le code de
+sortie vaut 1 s'il y a un écart.
+
+```bash
+python -m pharma2a.essai --agent https://agent.supplier.example
+python -m pharma2a.essai --agent https://agent.supplier.example --jeton <token> --compte <account> --cip <CIP 13> --ean <EAN 13> --commander --attendre 60
+```
+
+La première ligne n'envoie aucune commande : elle lit la carte, vérifie que rien ne répond
+sans jeton, et lit la fiche du fournisseur. `--commander` envoie de vraies commandes d'essai,
+chacune marquée « à ne pas livrer » : à n'utiliser que sur un agent d'essai, avec un compte
+client d'essai et des produits que le fournisseur vend. Il vérifie alors une commande par
+CIP 13, par EAN 13 et de plusieurs lignes, la même référence envoyée deux fois, un produit
+inconnu, un message hors dictionnaire, une commande pour un autre compte et une demande de
+devis. `--json` rend le résultat en JSON.
+
+### Un fournisseur de démonstration à qui commander
+
+`PHARMA2A_BACKEND=demo` fait de l'agent un fournisseur fictif qui répond tout seul, depuis
+les cinq références inventées de la fiche d'exemple : rien n'est transmis à personne. Une
+instance publique tourne sur `https://demo.pharma2a.org`, avec le jeton `demo-pharma2a` et le
+compte client `123456`. Elle oublie tout une fois par jour.
+
+```bash
+python -m pharma2a.officine --agent https://demo.pharma2a.org --jeton demo-pharma2a --attendre 80
+```
+
+Un agent d'officine ou un éditeur de logiciel d'officine peut y envoyer ses propres commandes
+avant de parler à un vrai fournisseur ; l'accusé de réception revient dans la minute.
 
 ## Faire évoluer le protocole
 

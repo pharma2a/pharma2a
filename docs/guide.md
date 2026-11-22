@@ -580,7 +580,8 @@ short:
 - **The references**: `reference` and `id_ligne` are kept on the sales order and
   come back on the acknowledgement and on the invoice.
 - **The quantities**: in sales units, never in cases. In the acknowledgement,
-  `quantite_confirmee` ships now, `reliquat` ships later, `rupture` does not ship.
+  `quantite_confirmee` ships now, `reliquat` ships later, `rupture` does not ship. A reference
+  the supplier does not sell is not `rupture`: `quantite_confirmee` is 0 and `commentaire` says why.
 - **The supplier's prices**: its list price, the discount shown on the invoice, the net price and the
   VAT, as it will invoice them; the agent never calculates them.
 
@@ -693,6 +694,39 @@ added agent is served without a restart.
   HTTP+JSON binding (section 11.1); its examples and its registered media type say
   `application/a2a+json`. The agent answers `application/a2a+json` to a client that announces it in
   `Accept`, and `application/json` to the others.
+
+### Checking a supplier agent: the conformance trial
+
+`python -m pharma2a.essai` plays the pharmacy against any supplier agent, yours or someone
+else's, and gives one verdict per rule, with the section of the specification: `conforme`,
+`écart` (a MUST is not met, or the server fails), `à voir` (a recommendation, or something
+that cannot be checked from outside) and `non vérifié`. The exit code is 1 when there is a gap.
+
+```bash
+python -m pharma2a.essai --agent https://agent.supplier.example
+python -m pharma2a.essai --agent https://agent.supplier.example --jeton <token> --compte <account> --cip <CIP 13> --ean <EAN 13> --commander --attendre 60
+```
+
+The first line sends no order: it reads the card, checks that nothing answers without a
+token, and reads the supplier sheet. `--commander` sends real trial orders, each marked "not
+to be delivered": use it only on a trial agent, with a trial customer account and products the
+supplier sells. It then checks an order by CIP 13, by EAN 13 and with several lines, the same
+reference sent twice, an unknown product, a message outside the dictionary, an order for
+another account and a quote request. `--json` gives the result as JSON.
+
+### A demo supplier to order against
+
+`PHARMA2A_BACKEND=demo` turns the agent into a fictitious supplier that answers by itself,
+from the five invented references of the example sheet: nothing is transmitted to anyone. A
+public instance runs at `https://demo.pharma2a.org`, with the token `demo-pharma2a` and the
+customer account `123456`. It forgets everything once a day.
+
+```bash
+python -m pharma2a.officine --agent https://demo.pharma2a.org --jeton demo-pharma2a --attendre 80
+```
+
+A pharmacy agent or a pharmacy software vendor can send its own orders there before talking
+to a real supplier; the acknowledgement comes back within a minute.
 
 ## Evolving the protocol
 
