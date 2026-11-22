@@ -68,6 +68,20 @@ git clone https://github.com/pharma2a/pharma2a && cd pharma2a
 python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[modele,test]"
 ```
 
+**The public demo supplier, with nothing to start.** Send the example order to a fictitious
+supplier that runs online and answers by itself within a minute:
+
+```bash
+python -m pharma2a.officine --agent https://demo.pharma2a.org --jeton demo-pharma2a --attendre 80
+```
+
+**Your own supplier agent, checked rule by rule.** The conformance trial plays the pharmacy and
+gives one verdict per rule of the specification; without `--commander` it sends no order:
+
+```bash
+python -m pharma2a.essai --agent https://your-agent.example
+```
+
 **The sample supplier, in one minute.** Start it, then let the demo pharmacy order from it:
 
 ```bash
