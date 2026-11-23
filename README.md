@@ -105,6 +105,7 @@ environment variable, listed in `.env.example`. `python -m pytest` runs the test
 - [**The protocol in detail**](docs/protocol.md): the messages, the diagrams, the rules, A2A conformance.
 - [**Connecting a supplier system**](docs/erp.md): the backend contract, an ERP round trip in 10 minutes, the dictionary mapped to ERP fields.
 - [**Decision records**](docs/adr/README.md): why the protocol is the way it is.
+- [**The directory and the product index**](docs/directory.md) (draft): how a supplier registers, and how an agent finds who sells a CIP 13 or EAN 13 code.
 - [**The guide**](docs/guide.md): the complete guide for a supplier's IT staff, installation and configuration included. [Version française](docs/guide-fr.md).
 - The dictionary itself: [`schema/`](schema/), with an example of each message in [`schema/exemples/`](schema/exemples/).
 
