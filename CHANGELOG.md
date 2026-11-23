@@ -10,6 +10,10 @@ version number, carried in every message and in the extension URI; see section 1
   agent and gives one verdict per rule of the specification.
 - The demo supplier, `PHARMA2A_BACKEND=demo`: a fictitious supplier that answers by itself. A
   public instance runs at `https://demo.pharma2a.org`.
+- Draft: the directory and the product index, [`docs/directory.md`](docs/directory.md) and
+  `python -m pharma2a.reseau`: a list of links (SIREN, name, domain), every supplier verified
+  at the source, and for each CIP 13 or EAN 13 code the verified suppliers that list it, no
+  price.
 
 ## 0.1 (12 November 2026)
 

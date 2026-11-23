@@ -1,0 +1,7 @@
+{
+ "version": "1",
+ "description": "L'annuaire de référence PharmA2A : une liste de domaines. Pour s'inscrire, publier https://<domaine>/.well-known/pharma2a.json puis ajouter son domaine ici. Règles : docs/directory.md.",
+ "fournisseurs": [
+  {"domaine": "demo.pharma2a.org"}
+ ]
+}

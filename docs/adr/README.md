@@ -12,3 +12,4 @@ decision supersedes it and says so. New records follow `template.md`.
 | [0004](0004-order-reference-is-idempotent.md) | The order reference is the order's identity, per customer account | Accepted |
 | [0005](0005-answer-in-working.md) | The agent answers in `working` instead of waiting for the supplier | Accepted |
 | [0006](0006-optional-a2a-profile-extension.md) | PharmA2A is an optional A2A profile extension | Accepted |
+| [0007](0007-directory-is-a-list-of-links.md) | The directory is a list of links, the product index is computed from the supplier sheets | Proposed |
